@@ -228,7 +228,5 @@ class EightPuzzle:
             print(nodesExpanded)
             print(maxQueueSize)
 
-
-
 if __name__ == "__main__":
     main()
