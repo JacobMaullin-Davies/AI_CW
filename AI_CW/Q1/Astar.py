@@ -6,14 +6,15 @@ goal_state =  [[0,1,2],
 
 def main():
      puzzle = EightPuzzle()
-     puzzle.set("724506831")
+     #puzzle.set("724506831")
      #puzzle.set("142375680")
-     #puzzle.set("123045678")
+     puzzle.set("123045678")
      #puzzle.set("1253406789")
+     heuristic = input("Input 1/2 for manhattan Distance or misplaced_tiles")
      print("initial:: \n")
      puzzle.show()
      print("solving:: \n")
-     puzzle.solve()
+     puzzle.solve(heuristic)
 
 def show(puzzle):
     print('')
@@ -44,6 +45,17 @@ def manhattanDistance(search, goal):
         # calculate the Manhattan Distance based on the points (row/col)
         man_dist += (abs(goal_row - puzzle_row) + abs(goal_col - puzzle_col))
     return man_dist
+
+def misplaced_tiles(search, goal):
+    mis_dist = 0
+        #rows
+    for i in range(0,3):
+        #colomns
+        for j in range(0,3):
+            if (search[i][j] != goal[i][j]):
+                    mis_dist += 1
+
+    return mis_dist
 
 def possibleMoves(matrix_search):
     possible_m = []
@@ -113,6 +125,7 @@ class EightPuzzle:
     def __init__(self):
         self.search_matrix = [[0,0,0],[0,0,0],[0,0,0]]
         self.goal_matrix = goal_state
+        self.heuristic_type = 1
 
     def set(self, other):
         i=0;
@@ -127,6 +140,14 @@ class EightPuzzle:
         print(self.search_matrix[1][0], self.search_matrix[1][1], self.search_matrix[1][2])
         print(self.search_matrix[2][0], self.search_matrix[2][1], self.search_matrix[2][2])
         print("\n")
+
+    def distanceFunction(self):
+        val = 0
+        if self.heuristic_type == 1:
+            val = manhattanDistance(self.search_matrix, self.goal_matrix)
+        else:
+            val = misplaced_tiles(self.search_matrix, self.goal_matrix)
+        return val
 
     def expandMoves(self, possible_moves, index_0, parent_node):
         new_puzzle_state = []
@@ -148,10 +169,15 @@ class EightPuzzle:
 
         return queue
 
-    def solve(self):
+    def solve(self, heuristic_type):
+        if heuristic_type == 1:
+            self.heuristic_type = 1
+        else:
+            self.heuristic_type = 2
+
         self.parent = 0
         self.gn = 0
-        self.hn = manhattanDistance(self.search_matrix, self.goal_matrix)
+        self.hn = EightPuzzle.distanceFunction(self)
         nodesExpanded = 0
         maxQueueSize = 0
 
@@ -209,7 +235,7 @@ class EightPuzzle:
 
                 new_path = Node()
                 new_path.setPuzzle(node)
-                new_path.hn = manhattanDistance(new_path.matrix, self.goal_matrix)
+                new_path.hn = EightPuzzle.distanceFunction(self)
                 new_path.gn = path_node.gn + 1
                 new_path.moves = path_node.moves + 1
                 new_path.path = copy.deepcopy(path_node.path)
@@ -227,6 +253,8 @@ class EightPuzzle:
             print("depth", priority_queue[0].gn)
             print(nodesExpanded)
             print(maxQueueSize)
+
+
 
 if __name__ == "__main__":
     main()
