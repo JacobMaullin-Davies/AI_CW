@@ -1,0 +1,53 @@
+2.1
+
+K-means algorithm is an iterative algorithm that tries to partition the dataset
+into K pre-defined distinct non-overlapping subgroups (clusters) where each data
+point belongs to only one group.
+
+Goal: given centroids a(1).....a(k), assign each point to the best centroid
+
+The way k-means algorithm works:
+Specify number of clusters K.
+Initialize centroids by first shuffling the dataset and then randomly selecting
+K data points for the centroids without replacement.
+Keep iterating until there is no change to the centroids
+(assignment of data points to clusters isn’t changing).
+Compute the sum of the squared distance between data points and all centroids.
+Assign each data point to the closest cluster (centroid).
+Compute the centroids for the clusters by taking the average of the all data
+points that belong to each cluster.
+
+This algorithm approach can be applied to the task of hand-written digit
+recognition as the size of the dataset is known, which allows the user to assign
+the clusters to each number. The k-means algorithm can be trained to understand
+the numbers and identify from the cluster what the written number is.
+
+https://towardsdatascience.com/k-means-clustering-algorithm-applications-evaluation-methods-and-drawbacks-aa03e644b48a#:~:text=Kmeans%20algorithm%20is%20an%20iterative,belongs%20to%20only%20one%20group.&text=Keep%20iterating%20until%20there%20is,to%20clusters%20isn't%20changing.
+
+
+2.2.1
+
+code
+
+2.2.2
+
+code
+
+2.2.3
+
+show data
+
+2.3
+
+The algorithm is only applicable if the mean is defined. K-means algorithm is
+good in capturing the structure of data if the clusters have a spherical-like shape.
+It will always try to construct a nice spherical shape around the centroid.
+Additionally, the user needs to specify k.
+
+Ex1 if the clusters have a complicated geometric shapes, k-means does a poor job in
+clustering the data.
+
+Ex2
+K-Means clustering algorithm is most sensitive to outliers as it uses the mean
+of cluster data points to find the cluster centre.
+If the data has many outliers, then k-means is more likely to fail.
