@@ -6,15 +6,15 @@ goal_state =  [[0,1,2],
 
 def main():
      puzzle = EightPuzzle()
-     #puzzle.set("724506831")
+     h = int(input("1/2:: "))
+     puzzle.set("724506831")
      #puzzle.set("142375680")
-     puzzle.set("123045678")
+     #puzzle.set("123045678")
      #puzzle.set("1253406789")
-     heuristic = input("Input 1/2 for manhattan Distance or misplaced_tiles")
      print("initial:: \n")
      puzzle.show()
      print("solving:: \n")
-     puzzle.solve(heuristic)
+     puzzle.solve(h)
 
 def show(puzzle):
     print('')
@@ -48,14 +48,23 @@ def manhattanDistance(search, goal):
 
 def misplaced_tiles(search, goal):
     mis_dist = 0
-        #rows
+    #rows
     for i in range(0,3):
         #colomns
         for j in range(0,3):
             if (search[i][j] != goal[i][j]):
                     mis_dist += 1
-
     return mis_dist
+
+def distanceFunction(h, search, goal):
+    hval = h
+    val = 0
+    if hval == 1:
+        val = manhattanDistance(search, goal)
+    if hval == 2:
+        val = misplaced_tiles(search, goal)
+
+    return val
 
 def possibleMoves(matrix_search):
     possible_m = []
@@ -125,7 +134,6 @@ class EightPuzzle:
     def __init__(self):
         self.search_matrix = [[0,0,0],[0,0,0],[0,0,0]]
         self.goal_matrix = goal_state
-        self.heuristic_type = 1
 
     def set(self, other):
         i=0;
@@ -140,14 +148,6 @@ class EightPuzzle:
         print(self.search_matrix[1][0], self.search_matrix[1][1], self.search_matrix[1][2])
         print(self.search_matrix[2][0], self.search_matrix[2][1], self.search_matrix[2][2])
         print("\n")
-
-    def distanceFunction(self):
-        val = 0
-        if self.heuristic_type == 1:
-            val = manhattanDistance(self.search_matrix, self.goal_matrix)
-        else:
-            val = misplaced_tiles(self.search_matrix, self.goal_matrix)
-        return val
 
     def expandMoves(self, possible_moves, index_0, parent_node):
         new_puzzle_state = []
@@ -169,31 +169,24 @@ class EightPuzzle:
 
         return queue
 
-    def solve(self, heuristic_type):
-        if heuristic_type == 1:
-            self.heuristic_type = 1
-        else:
-            self.heuristic_type = 2
-
+    def solve(self, h):
+        self.hval = h
         self.parent = 0
         self.gn = 0
-        self.hn = EightPuzzle.distanceFunction(self)
+        self.hn = distanceFunction(self.hval,self.search_matrix, self.goal_matrix)
         nodesExpanded = 0
-        maxQueueSize = 0
-
+        #______________
         priority_queue = []
         closed_nodes = []
-
+        #_____________
         initial_node = Node()
         initial_node.setPuzzle(self.search_matrix)
         initial_node.hn = self.hn
         initial_node.gn = -1
-
-
-
         priority_queue.append(initial_node)
 
         while 1:
+            self.hval = h
             if (len(priority_queue) == 0):
                 print("Puzzle search exhausted")
                 sys.exit(0)
@@ -206,21 +199,25 @@ class EightPuzzle:
             path_node.path = priority_queue[0].path
             path_node.set_fn()
 
+            print("Going with path node: \n")
+            print("fn:: ",priority_queue[0].fn)
+            print("Heuristic value:: ", priority_queue[0].hn)
+            print("Depth:: ", priority_queue[0].gn)
+            show(path_node.matrix)
 
             current_node = priority_queue[0]
             closed_nodes.append(current_node)
             priority_queue.pop(0)
 
 
-            print("Going with path node: \n")
-            show(path_node.matrix)
-
             if checkSolved(path_node):
-                print("Solved")
-                print("In moves: ")
-                print(path_node.moves)
-                print("Solution: ")
+                print(":: Solved :: \n")
+                print("In moves: ",path_node.moves)
+                print("Depth: ", path_node.gn)
                 path_node.path.append(self.goal_matrix)
+                print("Nodes visited:", len(closed_nodes))
+                print("Total nodes genaerated: ", nodesExpanded)
+                print("Move list: ")
                 for path_parent in path_node.path:
                     show(path_parent)
 
@@ -235,7 +232,7 @@ class EightPuzzle:
 
                 new_path = Node()
                 new_path.setPuzzle(node)
-                new_path.hn = EightPuzzle.distanceFunction(self)
+                new_path.hn = distanceFunction(h, new_path.matrix, self.goal_matrix)
                 new_path.gn = path_node.gn + 1
                 new_path.moves = path_node.moves + 1
                 new_path.path = copy.deepcopy(path_node.path)
@@ -245,14 +242,8 @@ class EightPuzzle:
                     priority_queue.append(new_path)
                     nodesExpanded += 1
 
-            if(len(priority_queue) > maxQueueSize):
-                maxQueueSize = len(priority_queue)
             priority_queue.sort(key=heuristic)
-            print("fn",priority_queue[0].fn)
-            print("man val", priority_queue[0].hn)
-            print("depth", priority_queue[0].gn)
-            print(nodesExpanded)
-            print(maxQueueSize)
+
 
 
 
