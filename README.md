@@ -9,5 +9,5 @@ configuration from the given initial state.
 
 Question 2 | Unsupervised learning: k-means clustering.
 
+Using kmeans for handwritten digit images
 
-Question 3 | Classification of urban areas using decision trees
